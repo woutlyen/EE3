@@ -1,6 +1,14 @@
 | Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C6 | ESP32-H2 | ESP32-S2 | ESP32-S3 |
 | ----------------- | ----- | -------- | -------- | -------- | -------- | -------- | -------- |
 
+# EE3 - Home Automation System
+This repository currently stores the code for the main node, e.g. ESP32S3, for the EE3 project.
+
+
+
+
+
+
 # _Sample project_
 
 (See the README.md file in the upper level 'examples' directory for more information about examples.)
