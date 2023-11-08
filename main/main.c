@@ -5,6 +5,7 @@
 #include "esp_http_client.h"
 #include "esp_tls.h"
 
+/*
 #include <string.h> //for handling strings
 #include "freertos/FreeRTOS.h" //for delay,mutexs,semphrs rtos operations
 #include "freertos/task.h"
@@ -16,9 +17,11 @@
 #include "nvs_flash.h" //non volatile storage
 #include "lwip/err.h" //light weight ip packets error handling
 #include "lwip/sys.h" //system applications for light weight ip apps
-
+*/
 #include "driver/gpio.h"
 #include "WiFi.h"
+//#include "speaker.h"
+#include "config.h"
 
 #define BLINK_GPIO GPIO_NUM_37
 #define BLINK_GPIO2 GPIO_NUM_36
@@ -26,22 +29,10 @@
 static const char *TAG = "audio_recorder";
 
 #define I2S_NUM_RX  I2S_NUM_0
-#define I2S_NUM_TX  I2S_NUM_1
+
 #define I2S_SAMPLE_RATE (8000)
 #define I2S_BUFFER_SIZE (I2S_SAMPLE_RATE * 6)
 #define WITAI_API_KEY "V55E3FX2CUEA4XPZXJKULRZ2VLCZD752"
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
@@ -116,14 +107,13 @@ static void configure_led(void)
 void app_main(void)
 {
 
-
-
     wifi_init(TAG);
     configure_led();
 
     while(true){
-    i2s_config_t i2s_rx_config = {
-        .mode = I2S_MODE_MASTER | I2S_MODE_RX,
+    
+    i2s_config_t i2s_tx_config = {
+        .mode = I2S_MODE_MASTER | I2S_MODE_TX,
         .sample_rate = I2S_SAMPLE_RATE,
         .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
         .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
@@ -133,8 +123,16 @@ void app_main(void)
         .dma_buf_len = 1024,
     };
 
-    i2s_config_t i2s_tx_config = {
-        .mode = I2S_MODE_MASTER | I2S_MODE_TX,
+    i2s_pin_config_t pin_tx_config = {
+        .bck_io_num = 11, // Configure these pins based on your hardware setup
+        .ws_io_num = 10,
+        .data_out_num = 12,
+        .data_in_num = I2S_PIN_NO_CHANGE,
+    };
+
+
+    i2s_config_t i2s_rx_config = {
+        .mode = I2S_MODE_MASTER | I2S_MODE_RX,
         .sample_rate = I2S_SAMPLE_RATE,
         .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
         .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
@@ -149,13 +147,6 @@ void app_main(void)
         .ws_io_num = 17,
         .data_out_num = I2S_PIN_NO_CHANGE,
         .data_in_num = 15,
-    };
-
-    i2s_pin_config_t pin_tx_config = {
-        .bck_io_num = 11, // Configure these pins based on your hardware setup
-        .ws_io_num = 10,
-        .data_out_num = 12,
-        .data_in_num = I2S_PIN_NO_CHANGE,
     };
 
     esp_err_t err;
