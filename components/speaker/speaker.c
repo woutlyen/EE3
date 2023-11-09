@@ -59,3 +59,7 @@ void speaker_play(uint8_t *audio_data, size_t audio_size){
     }
 }
 
+void speaker_stop(void){
+    i2s_driver_uninstall(PORT_TX);
+}
+

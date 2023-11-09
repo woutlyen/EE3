@@ -58,3 +58,7 @@ void microphone_record(uint8_t *audio_data, size_t audio_size){
         }
     }
 }
+
+void microphone_stop(void){
+    i2s_driver_uninstall(PORT_RX);
+}

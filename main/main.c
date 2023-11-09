@@ -1,7 +1,6 @@
 #include "esp_log.h"
 #include "esp_system.h"
 //#include "esp_intr_alloc.h"
-#include "driver/i2s.h"
 #include "driver/gpio.h"
 
 
@@ -51,7 +50,7 @@ void app_main(void)
 
     // Release resources
     free(buffer);
-    i2s_driver_uninstall(I2S_NUM_RX);
-    i2s_driver_uninstall(I2S_NUM_TX);
+    speaker_stop();
+    microphone_stop();
     }
 }
