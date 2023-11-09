@@ -11,25 +11,21 @@ Below is short explanation of all the files in the project folder.
 ├── components
 │   ├── microphone
 │   │   ├── CMakeLists.txt
-│   │   ├── config.h
 │   │   ├── include
 │   │   │   └── microphone.h
 │   │   └── microphone.c
 │   ├── speaker
 │   │   ├── CMakeLists.txt
-│   │   ├── config.h
 │   │   ├── include
 │   │   │   └── speaker.h
 │   │   └── speaker.c
 │   ├── WiFi
 │   │   ├── CMakeLists.txt
-│   │   ├── config.h
 │   │   ├── include
 │   │   │   └── WiFi.h
 │   │   └── WiFi.c
 │   └── wit_ai
 │       ├── CMakeLists.txt
-│       ├── config.h
 │       ├── include
 │       │   └── wit_ai.h
 │       └── wit_ai.c

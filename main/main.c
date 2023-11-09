@@ -27,7 +27,7 @@ void configure_led(void)
 void app_main(void)
 {
 
-    wifi_init(TAG);
+    wifi_init(TAG, ESP_WIFI_SSID, ESP_WIFI_PASS);
     configure_led();
 
     while(true){
