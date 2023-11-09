@@ -25,5 +25,8 @@
     "esp_tls.h": "c",
     "inttypes.h": "c",
     "stddef.h": "c"
-  }
+  },
+  "editor.fontSize": 12,
+  "terminal.integrated.fontSize": 12,
+  "window.zoomLevel": 1,
 }

@@ -1,3 +1,3 @@
-idf_component_register(SRCS WiFi.c WiFi.h
-                       INCLUDE_DIRS "."
+idf_component_register(SRCS WiFi.c
+                       INCLUDE_DIRS "include"
                        REQUIRES esp_wifi nvs_flash)
