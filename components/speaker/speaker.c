@@ -4,13 +4,14 @@
 #include "esp_log.h"
 #include "esp_system.h"
 //#include "esp_intr_alloc.h"
-#include "driver/i2s.h"
 
 static const char *TAG = NULL;
+i2s_port_t PORT_TX;
 
-void speaker_init(const char *T, size_t sample_rate){
+void speaker_init(const char *T, size_t sample_rate, i2s_port_t PORT){
 
     TAG = T;
+    PORT_TX = PORT;
 
     i2s_config_t i2s_tx_config = {
         .mode = I2S_MODE_MASTER | I2S_MODE_TX,
@@ -32,13 +33,13 @@ void speaker_init(const char *T, size_t sample_rate){
 
     esp_err_t err;
 
-    err = i2s_driver_install(I2S_NUM_TX, &i2s_tx_config, 0, NULL);
+    err = i2s_driver_install(PORT_TX, &i2s_tx_config, 0, NULL);
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "I2S TX driver install error: %d", err);
         return;
     }
 
-    err = i2s_set_pin(I2S_NUM_TX, &pin_tx_config);
+    err = i2s_set_pin(PORT_TX, &pin_tx_config);
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "I2S TX set pin error: %d", err);
         return;
@@ -50,7 +51,7 @@ void speaker_play(uint8_t *audio_data, size_t audio_size){
     esp_err_t err;
 
     while (bytes_read < audio_size) {
-        err = i2s_write(I2S_NUM_TX, audio_data + bytes_read, audio_size - bytes_read, &bytes_read, portMAX_DELAY);
+        err = i2s_write(PORT_TX, audio_data + bytes_read, audio_size - bytes_read, &bytes_read, portMAX_DELAY);
         if (err != ESP_OK) {
             ESP_LOGE(TAG, "I2S write error: %d", err);
             break;

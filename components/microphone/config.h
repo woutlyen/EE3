@@ -1,1 +1,0 @@
-#define I2S_NUM_RX  I2S_NUM_0

@@ -14,7 +14,7 @@
 static const char *TAG = "audio_recorder";
 
 
-static void configure_led(void)
+void configure_led(void)
 {
     gpio_reset_pin(BLINK_GPIO);
     gpio_reset_pin(BLINK_GPIO2);
@@ -32,8 +32,8 @@ void app_main(void)
 
     while(true){
     
-    speaker_init(TAG, I2S_SAMPLE_RATE);
-    microphone_init(TAG, I2S_SAMPLE_RATE);
+    speaker_init(TAG, I2S_SAMPLE_RATE, I2S_NUM_TX);
+    microphone_init(TAG, I2S_SAMPLE_RATE, I2S_NUM_RX);
     
     uint8_t *buffer = (uint8_t *)malloc(I2S_BUFFER_SIZE);
     if (!buffer) {

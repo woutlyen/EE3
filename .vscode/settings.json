@@ -29,5 +29,8 @@
   "editor.fontSize": 12,
   "terminal.integrated.fontSize": 12,
   "window.zoomLevel": 1,
-  "workbench.tree.indent": 25
+  "workbench.tree.indent": 25,
+  "workbench.colorCustomizations": {
+    "tree.indentGuidesStroke": "#e9e9e9"
+  }
 }

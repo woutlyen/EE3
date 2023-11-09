@@ -1,5 +1,4 @@
 #include "wit_ai.h"
-#include "config.h"
 
 #include <string.h>
 #include "esp_log.h"
