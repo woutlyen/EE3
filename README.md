@@ -4,6 +4,41 @@
 # EE3 - Home Automation System
 This repository currently stores the code for the main node, e.g. ESP32S3, for the EE3 project.
 
+Below is short explanation of all the files in the project folder.
+
+```
+├── CMakeLists.txt
+├── components
+│   ├── speaker
+│   │   ├── CMakeLists.txt
+│   │   ├── config.h
+│   │   ├── include
+│   │   │   └── speaker.h
+│   │   └── speaker.c
+│   ├── WiFi
+│   │   ├── CMakeLists.txt
+│   │   ├── config.h
+│   │   ├── include
+│   │   │   └── WiFi.h
+│   │   └── WiFi.c
+│   └── wit_ai
+│       ├── CMakeLists.txt
+│       ├── config.h
+│       ├── include
+│       │   └── wit_ai.h
+│       └── wit_ai.c
+├── main
+│   ├── CMakeLists.txt
+│   ├── config.h
+│   └──main.c
+└── README.md               This is the file you are currently reading
+```
+
+
+
+
+
+
 
 
 
