@@ -8,6 +8,7 @@
 #include "driver/gpio.h"
 
 static const char *TAG = NULL;
+gpio_num_t LEDPIN;
 
 static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
     switch (evt->event_id) {
@@ -18,10 +19,10 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
             if (evt->data_len > 0) {
                 ESP_LOGI(TAG, "Response data: %.*s", evt->data_len, (char *)evt->data);
                 if (strstr((char *)evt->data, "Unlock") != NULL){
-                    gpio_set_level(BLINK_GPIO2, 1);
+                    gpio_set_level(LEDPIN, 1);
                 }
                 else if (strstr((char *)evt->data, "unlock") != NULL){
-                    gpio_set_level(BLINK_GPIO2, 1);
+                    gpio_set_level(LEDPIN, 1);
                 }
             }
             break;
@@ -33,10 +34,11 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
 
 
 
-void wit_ai_send_audio(const char *T, uint8_t *audio_data, size_t audio_size) {
+void wit_ai_send_audio(const char *T, uint8_t *audio_data, size_t audio_size, gpio_num_t LED) {
     
     TAG = T;
-    
+    LEDPIN = LED;
+
     esp_tls_cfg_t tls_cfg = {
     .skip_common_name = false,
     // Other TLS configuration settings can be added here if needed

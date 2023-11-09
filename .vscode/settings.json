@@ -29,4 +29,5 @@
   "editor.fontSize": 12,
   "terminal.integrated.fontSize": 12,
   "window.zoomLevel": 1,
+  "workbench.tree.indent": 25
 }

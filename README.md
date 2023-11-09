@@ -9,6 +9,12 @@ Below is short explanation of all the files in the project folder.
 ```
 ├── CMakeLists.txt
 ├── components
+│   ├── microphone
+│   │   ├── CMakeLists.txt
+│   │   ├── config.h
+│   │   ├── include
+│   │   │   └── microphone.h
+│   │   └── microphone.c
 │   ├── speaker
 │   │   ├── CMakeLists.txt
 │   │   ├── config.h
@@ -30,9 +36,24 @@ Below is short explanation of all the files in the project folder.
 ├── main
 │   ├── CMakeLists.txt
 │   ├── config.h
-│   └──main.c
+│   └── main.c
 └── README.md               This is the file you are currently reading
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
