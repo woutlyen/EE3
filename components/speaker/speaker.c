@@ -1,3 +1,4 @@
+
 #include "esp_log.h"
 #include "esp_system.h"
 #include "esp_intr_alloc.h"
@@ -44,14 +45,16 @@ void speaker_init(const char *T){
     }
 }
 
-void speaker_play(){
+void speaker_play(uint8_t *audio_data, size_t audio_size){
     size_t bytes_read = 0;
+    esp_err_t err;
 
-    while (bytes_read < I2S_BUFFER_SIZE) {
-        err = i2s_write(I2S_NUM_TX, buffer + bytes_read, I2S_BUFFER_SIZE - bytes_read, &bytes_read, portMAX_DELAY);
+    while (bytes_read < audio_size) {
+        err = i2s_write(I2S_NUM_TX, audio_data + bytes_read, audio_size - bytes_read, &bytes_read, portMAX_DELAY);
         if (err != ESP_OK) {
             ESP_LOGE(TAG, "I2S write error: %d", err);
             break;
         }
     }
 }
+

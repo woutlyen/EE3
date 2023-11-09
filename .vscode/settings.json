@@ -19,6 +19,11 @@
     "max98357a.h": "c",
     "config.h": "c",
     "task.h": "c",
-    "speaker.h": "c"
+    "speaker.h": "c",
+    "esp_intr_alloc.h": "c",
+    "wit_ai.h": "c",
+    "esp_tls.h": "c",
+    "inttypes.h": "c",
+    "stddef.h": "c"
   }
 }

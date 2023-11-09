@@ -1,2 +1,3 @@
-idf_component_register(SRCS speaker.c speaker.h
-                       INCLUDE_DIRS ".")
+idf_component_register(SRCS speaker.c
+                       INCLUDE_DIRS "include"
+                       REQUIRES driver)

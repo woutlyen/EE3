@@ -2,6 +2,12 @@
 #define CONFIG_H
 
 #define I2S_NUM_TX  I2S_NUM_1
+#define I2S_NUM_RX  I2S_NUM_0
 
+#define I2S_SAMPLE_RATE (8000)
+#define I2S_BUFFER_SIZE (I2S_SAMPLE_RATE * 6)
+
+#define BLINK_GPIO GPIO_NUM_37
+#define BLINK_GPIO2 GPIO_NUM_36
 
 #endif
