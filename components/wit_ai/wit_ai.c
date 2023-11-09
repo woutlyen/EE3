@@ -32,19 +32,22 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
     return ESP_OK;
 }
 
-
-
-void wit_ai_send_audio(const char *T, uint8_t *audio_data, size_t audio_size, gpio_num_t LED) {
+void wit_ai_send_audio(const char *T, uint8_t *audio_data, size_t audio_size, gpio_num_t LED, char* API_URL, char* API_KEY, char* API_TYPE) {
     
     TAG = T;
     LEDPIN = LED;
 
-    esp_tls_cfg_t tls_cfg = {
+    char* FULL_KEY = malloc(strlen(API_KEY)+1+8);
+    strcpy(FULL_KEY, "Bearer "); 
+    strcat(FULL_KEY, API_KEY); 
+    strcat(FULL_KEY, "\n");
+
+esp_tls_cfg_t tls_cfg = {
     .skip_common_name = false,
     // Other TLS configuration settings can be added here if needed
 };
     esp_http_client_config_t config = {
-        .url = "https://api.wit.ai/dictation?v=20231106",
+        .url = API_URL,
         .event_handler = http_event_handler,
         .method = HTTP_METHOD_POST,
     };
@@ -52,9 +55,9 @@ void wit_ai_send_audio(const char *T, uint8_t *audio_data, size_t audio_size, gp
     esp_http_client_handle_t client = esp_http_client_init(&config);
 
     // Set the Wit.ai API key in the request header
-    esp_http_client_set_header(client, "Authorization", "Bearer " WITAI_API_KEY "\n");
+    esp_http_client_set_header(client, "Authorization", FULL_KEY);
     // Set the content type for audio data
-    esp_http_client_set_header(client, "Content-Type", "audio/raw;encoding=signed-integer;bits=16;rate=8000;endian=little");
+    esp_http_client_set_header(client, "Content-Type", API_TYPE);
 
     // Send the audio data in the request body
     esp_http_client_open(client, audio_size);
@@ -71,4 +74,5 @@ void wit_ai_send_audio(const char *T, uint8_t *audio_data, size_t audio_size, gp
 
     esp_http_client_perform(client);
     esp_http_client_cleanup(client);
+    free(FULL_KEY);
 }

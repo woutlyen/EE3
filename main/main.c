@@ -44,7 +44,7 @@ void app_main(void)
     gpio_set_level(BLINK_GPIO, 1);
     microphone_record(buffer, I2S_BUFFER_SIZE);
     gpio_set_level(BLINK_GPIO, 0);
-    wit_ai_send_audio(TAG, buffer, I2S_BUFFER_SIZE, BLINK_GPIO2);
+    wit_ai_send_audio(TAG, buffer, I2S_BUFFER_SIZE, BLINK_GPIO2, AI_API_URL, AI_API_KEY, AI_API_TYPE);
     speaker_play(buffer, I2S_BUFFER_SIZE);
     gpio_set_level(BLINK_GPIO2, 0);
 
