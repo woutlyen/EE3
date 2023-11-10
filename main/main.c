@@ -3,11 +3,11 @@
 //#include "esp_intr_alloc.h"
 #include "driver/gpio.h"
 
-
-#include "WiFi.h"
-#include "speaker.h"
 #include "microphone.h"
+#include "speaker.h"
+#include "WiFi.h"
 #include "wit_ai.h"
+
 #include "config.h"
 
 static const char *TAG = "audio_recorder";
