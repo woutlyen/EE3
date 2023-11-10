@@ -57,7 +57,6 @@ dkms.conf
 
 main/config.h
 build/
-skdconfig.old
 
 
 # End of https://www.toptal.com/developers/gitignore/api/c

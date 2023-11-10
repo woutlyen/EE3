@@ -31,7 +31,6 @@ Below is short explanation of all the files in the project folder.
 │       └── wit_ai.c
 ├── main
 │   ├── CMakeLists.txt
-│   ├── config.h
 │   └── main.c
 └── README.md               This is the file you are currently reading
 ```
