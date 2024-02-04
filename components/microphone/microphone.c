@@ -57,6 +57,13 @@ void microphone_record(uint8_t *audio_data, size_t audio_size){
             break;
         }
     }
+
+/*
+    for (size_t i = 0; i < audio_size/2; i++)
+    {
+        audio_data[2*i+1]= audio_data[2*i+1]*10;
+    }
+*/
 }
 
 void microphone_stop(void){
