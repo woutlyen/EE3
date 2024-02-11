@@ -88,6 +88,9 @@ static void *AI_thread(void * arg){
     uint8_t *buffer = (uint8_t *)malloc(I2S_BUFFER_SIZE);
     if (!buffer) {
         ESP_LOGE(TAG, "Memory allocation error");
+
+        speaker_stop();
+        microphone_stop();
         //return NULL;
     }
     else{
