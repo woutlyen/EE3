@@ -13,7 +13,7 @@
 
 #include "microphone.h"
 #include "speaker.h"
-#include "WiFi.h"
+//#include "WiFi.h"
 #include "wit_ai.h"
 #include "heating_temp_sensor.h"
 #include "RGB_light.h"
