@@ -6,6 +6,8 @@
 #include "esp_tls.h"
 #include "driver/gpio.h"
 
+#include "normal_light.h"
+
 static const char *TAG = NULL;
 gpio_num_t LEDPIN;
 
@@ -18,10 +20,11 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
             if (evt->data_len > 0) {
                 ESP_LOGI(TAG, "Response data: %.*s", evt->data_len, (char *)evt->data);
                 if (strstr((char *)evt->data, "Unlock") != NULL){
-                    gpio_set_level(LEDPIN, 1);
+                    turn_on_normal_light();
+                    //gpio_set_level(LEDPIN, 1);
                 }
                 else if (strstr((char *)evt->data, "unlock") != NULL){
-                    gpio_set_level(LEDPIN, 1);
+                    //gpio_set_level(LEDPIN, 1);
                 }
             }
             break;
