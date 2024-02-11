@@ -24,6 +24,7 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
                     //gpio_set_level(LEDPIN, 1);
                 }
                 else if (strstr((char *)evt->data, "unlock") != NULL){
+                    turn_on_normal_light();
                     //gpio_set_level(LEDPIN, 1);
                 }
             }
