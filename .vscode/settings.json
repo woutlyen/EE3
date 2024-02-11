@@ -24,7 +24,8 @@
     "wit_ai.h": "c",
     "esp_tls.h": "c",
     "inttypes.h": "c",
-    "stddef.h": "c"
+    "stddef.h": "c",
+    "microphone.h": "c"
   },
   "editor.fontSize": 12,
   "terminal.integrated.fontSize": 12,
