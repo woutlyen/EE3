@@ -25,7 +25,10 @@
     "esp_tls.h": "c",
     "inttypes.h": "c",
     "stddef.h": "c",
-    "microphone.h": "c"
+    "microphone.h": "c",
+    "mqtt_client.h": "c",
+    "netdb.h": "c",
+    "complex": "c"
   },
   "editor.fontSize": 12,
   "terminal.integrated.fontSize": 12,
