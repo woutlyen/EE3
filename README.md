@@ -9,11 +9,41 @@ Below is short explanation of all the files in the project folder.
 ```
 ├── CMakeLists.txt
 ├── components
+│   ├── dimmable_light
+│   │   ├── CMakeLists.txt
+│   │   ├── dimmable_light.c
+│   │   └── include
+│   │       └── dimmable_light.h
+│   ├── heating_temp_sensor
+│   │   ├── CMakeLists.txt
+│   │   ├── heating_temp_sensor.c
+│   │   └── include
+│   │       └── heating_temp_sensor.h
 │   ├── microphone
 │   │   ├── CMakeLists.txt
 │   │   ├── include
 │   │   │   └── microphone.h
 │   │   └── microphone.c
+│   ├── motion_sensor
+│   │   ├── CMakeLists.txt
+│   │   ├── include
+│   │   │   └── motion_sensor.h
+│   │   └── motion_sensor.c
+│   ├── MQTT
+│   │   ├── CMakeLists.txt
+│   │   ├── include
+│   │   │   └── MQTT.h
+│   │   └── MQTT.c
+│   ├── normal_light
+│   │   ├── CMakeLists.txt
+│   │   ├── include
+│   │   │   └── normal_light.h
+│   │   └── normal_light.c
+│   ├── RGB_light
+│   │   ├── CMakeLists.txt
+│   │   ├── include
+│   │   │   └── RGB_light.h
+│   │   └── RGB_light.c
 │   ├── speaker
 │   │   ├── CMakeLists.txt
 │   │   ├── include
@@ -31,6 +61,9 @@ Below is short explanation of all the files in the project folder.
 │       └── wit_ai.c
 ├── main
 │   ├── CMakeLists.txt
-│   └── main.c
+│   ├── config.h
+│   ├── Kconfig.projbuild
+│   ├── main.c
+│   └── WavData.h
 └── README.md               This is the file you are currently reading
 ```
