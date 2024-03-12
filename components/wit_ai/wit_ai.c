@@ -20,11 +20,11 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
             if (evt->data_len > 0) {
                 ESP_LOGI(TAG, "Response data: %.*s", evt->data_len, (char *)evt->data);
                 if (strstr((char *)evt->data, "Unlock") != NULL){
-                    turn_on_normal_light();
+                    //turn_on_normal_light();
                     //gpio_set_level(LEDPIN, 1);
                 }
                 else if (strstr((char *)evt->data, "unlock") != NULL){
-                    turn_on_normal_light();
+                    //turn_on_normal_light();
                     //gpio_set_level(LEDPIN, 1);
                 }
             }

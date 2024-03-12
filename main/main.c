@@ -97,18 +97,18 @@ static void *AI_thread(void * arg){
         speaker_play(startData, 78630);
         speaker_stop();
 
-        on_dimmable_light();
+        //on_dimmable_light();
         //gpio_set_level(BLINK_GPIO, 1);
 
         microphone_record(buffer, I2S_BUFFER_SIZE);
 
-        set_dimmable_light_brightness(0, false);
+        //set_dimmable_light_brightness(0, false);
         //gpio_set_level(BLINK_GPIO, 0);
 
         
 
         wit_ai_send_audio(TAG, buffer, I2S_BUFFER_SIZE, BLINK_GPIO2, AI_API_URL, AI_API_KEY, AI_API_TYPE);
-        turn_off_normal_light();
+        //turn_off_normal_light();
         //gpio_set_level(BLINK_GPIO2, 0);
 
         speaker_init(TAG, 8000, I2S_NUM_TX);
