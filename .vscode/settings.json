@@ -1,6 +1,6 @@
 {
   "C_Cpp.intelliSenseEngine": "Tag Parser",
-  "idf.port": "/dev/ttyACM0",
+  "idf.port": "/dev/ttyUSB0",
   "idf.adapterTargetName": "esp32s3",
   "idf.openOcdConfigs": [
     "interface/ftdi/esp32_devkitj_v1.cfg",
@@ -31,7 +31,8 @@
     "complex": "c",
     "normal_light.h": "c",
     "unistd.h": "c",
-    "cstring": "c"
+    "cstring": "c",
+    "sd_card.h": "c"
   },
   "editor.fontSize": 12,
   "terminal.integrated.fontSize": 12,
