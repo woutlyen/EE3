@@ -29,7 +29,9 @@
     "mqtt_client.h": "c",
     "netdb.h": "c",
     "complex": "c",
-    "normal_light.h": "c"
+    "normal_light.h": "c",
+    "unistd.h": "c",
+    "cstring": "c"
   },
   "editor.fontSize": 12,
   "terminal.integrated.fontSize": 12,
