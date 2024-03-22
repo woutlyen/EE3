@@ -31,8 +31,7 @@
     "complex": "c",
     "normal_light.h": "c",
     "unistd.h": "c",
-    "cstring": "c",
-    "sd_card.h": "c"
+    "cstring": "c"
   },
   "editor.fontSize": 12,
   "terminal.integrated.fontSize": 12,

@@ -38,8 +38,8 @@ void speaker_init(const char *T, size_t sample_rate, i2s_port_t PORT){
 
     i2s_pin_config_t pin_tx_config = {
         .bck_io_num = 11, // Configure these pins based on your hardware setup
-        .ws_io_num = 10,
-        .data_out_num = 12,
+        .ws_io_num = 12,
+        .data_out_num = 10,
         .data_in_num = I2S_PIN_NO_CHANGE,
     };
 

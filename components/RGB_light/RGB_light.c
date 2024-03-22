@@ -2,9 +2,9 @@
 #include "RGB_light.h"
 
 // Pin numbers for the RGB LED
-#define RED_PIN   5
-#define GREEN_PIN 7
-#define BLUE_PIN  6
+#define RED_PIN   20
+#define GREEN_PIN 19
+#define BLUE_PIN  45
 
 // LEDC channel configuration
 #define RED_CHANNEL   LEDC_CHANNEL_0
@@ -37,9 +37,9 @@ void init_rgb_light(){
 
 
 void set_rgb_light(int red, int green, int blue, bool update) {
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, RED_CHANNEL, 1024-(red*rgb_brightness/255)*4);
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, GREEN_CHANNEL, 1024-(green*rgb_brightness/255)*4);
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, BLUE_CHANNEL, 1024-(blue*rgb_brightness/255)*4);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, RED_CHANNEL, (red*rgb_brightness/255)*4);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, GREEN_CHANNEL, (green*rgb_brightness/255)*4);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, BLUE_CHANNEL, (blue*rgb_brightness/255)*4);
     ledc_update_duty(LEDC_LOW_SPEED_MODE, RED_CHANNEL);
     ledc_update_duty(LEDC_LOW_SPEED_MODE, GREEN_CHANNEL);
     ledc_update_duty(LEDC_LOW_SPEED_MODE, BLUE_CHANNEL);
@@ -54,9 +54,9 @@ void set_rgb_light(int red, int green, int blue, bool update) {
 }
 
 void on_rgb_light() {
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, RED_CHANNEL, 1024-(rgb[0]*rgb_brightness/255)*4);
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, GREEN_CHANNEL, 1024-(rgb[1]*rgb_brightness/255)*4);
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, BLUE_CHANNEL, 1024-(rgb[2]*rgb_brightness/255)*4);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, RED_CHANNEL, (rgb[0]*rgb_brightness/255)*4);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, GREEN_CHANNEL, (rgb[1]*rgb_brightness/255)*4);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, BLUE_CHANNEL, (rgb[2]*rgb_brightness/255)*4);
     ledc_update_duty(LEDC_LOW_SPEED_MODE, RED_CHANNEL);
     ledc_update_duty(LEDC_LOW_SPEED_MODE, GREEN_CHANNEL);
     ledc_update_duty(LEDC_LOW_SPEED_MODE, BLUE_CHANNEL);
