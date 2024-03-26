@@ -31,7 +31,11 @@
     "complex": "c",
     "normal_light.h": "c",
     "unistd.h": "c",
-    "cstring": "c"
+    "cstring": "c",
+    "compare": "c",
+    "algorithm": "c",
+    "mqtt.h": "c",
+    "dimmable_light.h": "c"
   },
   "editor.fontSize": 12,
   "terminal.integrated.fontSize": 12,

@@ -12,7 +12,7 @@
 #define BLUE_CHANNEL  LEDC_CHANNEL_2
 
 int rgb[3] = {0, 178, 255};
-int rgb_brightness = 50;
+int rgb_brightness = 255;
 
 void init_rgb_light(){
     // Configure LEDC peripheral

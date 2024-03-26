@@ -128,25 +128,51 @@ static esp_err_t play_wav(const char *path)
 
   // create a writer buffer
   uint8_t *buf = calloc(AUDIO_BUFFER, sizeof(int8_t));
+  uint8_t *emptybuf = calloc(AUDIO_BUFFER, sizeof(int8_t));
+  uint16_t *inbuf = calloc(AUDIO_BUFFER/2, sizeof(int16_t));
   size_t bytes_read = 0;
   size_t bytes_written = 0;
 
-  bytes_read = fread(buf, sizeof(int8_t), AUDIO_BUFFER, fh);
+  bytes_read = fread(inbuf, sizeof(int16_t), AUDIO_BUFFER/2, fh);
 
   speaker_init(TAG, 48000, I2S_NUM_TX);
 
-  while (bytes_read > 0)
+  int16_t sample = 0;
+  float factor = 0.5;
+
+  while (bytes_read > 0 && get_music_next_prev() == 0)
   {
-    speaker_play(buf, AUDIO_BUFFER);
-    // write the buffer to the i2s
-    //i2s_channel_write(tx_handle, buf, bytes_read * sizeof(int16_t), &bytes_written, portMAX_DELAY);
-    bytes_read = fread(buf, sizeof(int8_t), AUDIO_BUFFER, fh);
-    ESP_LOGV(TAG, "Bytes read: %d", bytes_read);
+    //ESP_LOGI(TAG, "Music %d, %u", get_music_on_off(), bytes_read);
+
+    if (get_music_on_off() == true){
+        factor = get_music_volume();
+        for (size_t i = 0; i < AUDIO_BUFFER/2; i++)
+        {
+            sample = inbuf[i];
+            sample = (sample*factor);
+            buf[2*i] = sample & 0xFF;
+            buf[2*i+1] = (sample >> 8);
+
+        }
+
+        speaker_play(buf, AUDIO_BUFFER);
+        // write the buffer to the i2s
+        //i2s_channel_write(tx_handle, buf, bytes_read * sizeof(int16_t), &bytes_written, portMAX_DELAY);
+        bytes_read = fread(inbuf, sizeof(int16_t), AUDIO_BUFFER/2, fh);
+        ESP_LOGV(TAG, "Bytes read: %d", bytes_read);
+    }
+    else{
+        speaker_play(emptybuf, AUDIO_BUFFER);
+    }
+    
   }
+
+  clear_music_next_prev();
 
   //i2s_channel_disable(tx_handle);
   speaker_stop();
   free(buf);
+  free(inbuf);
   fclose(fh);
   return ESP_OK;
 }
@@ -310,45 +336,46 @@ void app_main(void)
 
     set_rgb_light(150,30,0,true);
 
-    /*const char *tour = MOUNT_POINT"/tour.wav";
-    ret = play_wav(tour);
-    if (ret != ESP_OK) {
-        return;
-    }*/
 
-    
+    while(true){
+        const char *tour = MOUNT_POINT"/tour.wav";
+        ret = play_wav(tour);
+        if (ret != ESP_OK) {
+            return;
+        }
+        
 
-    const char *tour2 = MOUNT_POINT"/promised.wav";
-    ret = play_wav(tour2);
-    if (ret != ESP_OK) {
-        return;
+        const char *tour2 = MOUNT_POINT"/promised.wav";
+        ret = play_wav(tour2);
+        if (ret != ESP_OK) {
+            return;
+        }
+
+        const char *tour3 = MOUNT_POINT"/dansen.wav";
+        ret = play_wav(tour3);
+        if (ret != ESP_OK) {
+            return;
+        }
+
+        const char *tour4 = MOUNT_POINT"/turbo.wav";
+        ret = play_wav(tour4);
+        if (ret != ESP_OK) {
+            return;
+        }
+
+        const char *tour5 = MOUNT_POINT"/gold.wav";
+        ret = play_wav(tour5);
+        if (ret != ESP_OK) {
+            return;
+        }
+
+        const char *tour6 = MOUNT_POINT"/trip.wav";
+
+        ret = play_wav(tour6);
+        if (ret != ESP_OK) {
+            return;
+        }
     }
-
-    const char *tour3 = MOUNT_POINT"/dansen.wav";
-    ret = play_wav(tour3);
-    if (ret != ESP_OK) {
-        return;
-    }
-
-    const char *tour4 = MOUNT_POINT"/turbo.wav";
-    ret = play_wav(tour4);
-    if (ret != ESP_OK) {
-        return;
-    }
-
-    const char *tour5 = MOUNT_POINT"/gold.wav";
-    ret = play_wav(tour5);
-    if (ret != ESP_OK) {
-        return;
-    }
-
-    const char *tour6 = MOUNT_POINT"/trip.wav";
-
-    ret = play_wav(tour6);
-    if (ret != ESP_OK) {
-        return;
-    }
-
 
     // All done, unmount partition and disable SPI peripheral
     esp_vfs_fat_sdcard_unmount(mount_point, card);

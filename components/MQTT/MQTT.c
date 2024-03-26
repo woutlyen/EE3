@@ -10,6 +10,10 @@ extern esp_mqtt_client_handle_t event_client;
 
 static const char *TAG = "MQTT";
 
+int music_volume = 50;
+bool music_on_off = false;
+int music_next_prev = 0;
+
 void publish_dimmable_light_brightness(){
     char status[4];
     sprintf(status,"%d", get_dimmable_light_brightness());
@@ -27,6 +31,29 @@ void publish_rgb_light_brightness(){
     sprintf(status,"%d", get_rgb_light_brightness());
     esp_mqtt_client_publish(event_client, "rgb/brightness/status", status, 0, 0, 0);
 }
+
+void publish_volume(){
+    char status[4];
+    sprintf(status,"%d", music_volume);
+    esp_mqtt_client_publish(event_client, "music/volume/status", status, 0, 0, 0);
+}
+
+bool get_music_on_off(){
+    return music_on_off;
+}
+
+float get_music_volume(){
+    return (float) music_volume/255;
+} 
+
+int get_music_next_prev(){
+    return music_next_prev;
+}
+
+void clear_music_next_prev(){
+    music_next_prev = 0;
+}
+
 
 static void log_error_if_nonzero(const char *message, int error_code)
 {
@@ -61,6 +88,17 @@ void mqtt_connected(){
     ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
     msg_id = esp_mqtt_client_subscribe(event_client, "hvac/temp/set", 0);
     ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+
+    msg_id = esp_mqtt_client_subscribe(event_client, "music/switch", 0);
+    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+    msg_id = esp_mqtt_client_subscribe(event_client, "music/volume/set", 0);
+    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+    msg_id = esp_mqtt_client_subscribe(event_client, "music/previous", 0);
+    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+    msg_id = esp_mqtt_client_subscribe(event_client, "music/pause", 0);
+    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+    msg_id = esp_mqtt_client_subscribe(event_client, "music/next", 0);
+    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
     
 }
 
@@ -85,6 +123,9 @@ void mqtt_subscribed(){
 
     esp_mqtt_client_publish(event_client, "motion/downstairs/status", "OFF", 0, 0, 0);
     esp_mqtt_client_publish(event_client, "motion/upstairs/status", "OFF", 0, 0, 0);
+
+    esp_mqtt_client_publish(event_client, "music/status", "OFF", 0, 0, 0);
+    esp_mqtt_client_publish(event_client, "music/volume/status", "50", 0, 0, 0);
 }
 
 
@@ -212,23 +253,58 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             publish_dimmable_light_brightness();
         }
 
-        else if (strcmp(mqtt_topic, "normal/light/switch") == 0)
+        else if (strcmp(mqtt_topic, "music/switch") == 0)
         {
-            char rgb_on_off[10];
-            sprintf(rgb_on_off, "%.*s", event->data_len, event->data);
+            char on_off[10];
+            sprintf(on_off, "%.*s", event->data_len, event->data);
 
-            if (strcmp(rgb_on_off, "ON") == 0)
+            if (strcmp(on_off, "ON") == 0)
             {
-                turn_on_normal_light();
-                esp_mqtt_client_publish(client, "normal/light/status", rgb_on_off, 0, 0, 0);
+                music_on_off = true;
+                esp_mqtt_client_publish(client, "music/status", on_off, 0, 0, 0);
             }
-            else if(strcmp(rgb_on_off, "OFF") == 0)
+            else if(strcmp(on_off, "OFF") == 0)
             {
-                turn_off_normal_light();
-                esp_mqtt_client_publish(client, "normal/light/status", rgb_on_off, 0, 0, 0);
+                music_on_off = false;
+                esp_mqtt_client_publish(client, "music/status", on_off, 0, 0, 0);
             }
             
         }
+
+        else if (strcmp(mqtt_topic, "music/volume/set") == 0)
+        {
+            char temp[4];
+            sprintf(temp, "%.*s\r\n", event->data_len, event->data);
+            music_volume = (atoi(temp));
+        
+            publish_volume();
+        }
+
+        else if (strcmp(mqtt_topic, "music/previous") == 0)
+        {
+         music_next_prev = 1;
+        }
+
+        else if (strcmp(mqtt_topic, "music/next") == 0)
+        {
+         music_next_prev = 2;
+        }
+
+
+        else if (strcmp(mqtt_topic, "music/pause") == 0)
+        {
+         music_on_off = !music_on_off;
+
+            if (music_on_off)
+            {
+                esp_mqtt_client_publish(client, "music/status", "ON", 0, 0, 0);
+            }
+            else
+            {
+                esp_mqtt_client_publish(client, "music/status", "OFF", 0, 0, 0);
+            }
+        }
+
 
         else if (strcmp(mqtt_topic, "hvac/mode/set") == 0)
         {
