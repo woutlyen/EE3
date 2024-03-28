@@ -43,5 +43,6 @@
   "workbench.tree.indent": 25,
   "workbench.colorCustomizations": {
     "tree.indentGuidesStroke": "#e9e9e9"
-  }
+  },
+  "idf.flashType": "UART"
 }

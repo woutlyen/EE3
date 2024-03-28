@@ -6,6 +6,7 @@
 #include "freertos/task.h"
 #include "freertos/queue.h"
 #include "driver/gpio.h"
+#include "MQTT.h"
 
 #include "motion_sensor.h"
 #include "normal_light.h"
@@ -14,7 +15,7 @@
 extern esp_mqtt_client_handle_t event_client;
 
 // Motion sensors
-#define MOTION_PIN 8
+#define MOTION_PIN 38
 #define MOTION_PIN_2 13
 #define GPIO_INPUT_PIN_SEL  ((1ULL<<MOTION_PIN) | (1ULL<<MOTION_PIN_2))
 
@@ -48,6 +49,9 @@ static void gpio_task(void* arg)
             if (io_num == MOTION_PIN && gpio_get_level(io_num) == 1)
             {
                 esp_mqtt_client_publish(event_client, "motion/downstairs/status", "ON", 0, 0, 0);
+                if(get_alarm_state()){
+                    esp_mqtt_client_publish(event_client, "alarmdecoder/panel", "triggered", 0, 0, 0);
+                }
             }
             else if (io_num == MOTION_PIN && gpio_get_level(io_num) == 0){
                 esp_mqtt_client_publish(event_client, "motion/downstairs/status", "OFF", 0, 0, 0);

@@ -167,8 +167,6 @@ static esp_err_t play_wav(const char *path)
     
   }
 
-  clear_music_next_prev();
-
   //i2s_channel_disable(tx_handle);
   speaker_stop();
   free(buf);
@@ -189,6 +187,7 @@ void app_main(void)
     ESP_ERROR_CHECK(example_connect());
 
     event_client = init_mqtt();
+    init_motion_sensor();
 
     pthread_attr_t attr;
     pthread_t thread1, thread2;
@@ -336,8 +335,39 @@ void app_main(void)
 
     set_rgb_light(150,30,0,true);
 
+    const char *songs[] = {"promised", "tour", "dansen", "turbo", "gold", "trip"};
+
+    int MAX_PATH_LENGTH = 100;
+    int ARRAY_SIZE = 6;
+    int CURRENT_LOC = 0;
+
+    char song[MAX_PATH_LENGTH];
 
     while(true){
+
+        snprintf(song, MAX_PATH_LENGTH, "%s/%s.wav", MOUNT_POINT, songs[CURRENT_LOC]);
+
+        ESP_LOGI(TAG, "%d %s", CURRENT_LOC, song);
+
+        ret = play_wav(song);
+        if (ret != ESP_OK) {
+            return;
+        }
+
+        if(get_music_next_prev() == 2){
+            CURRENT_LOC++;
+            CURRENT_LOC = CURRENT_LOC % (ARRAY_SIZE);
+        }
+        else if (get_music_next_prev() == 1){
+            CURRENT_LOC--;
+            CURRENT_LOC = (CURRENT_LOC+ARRAY_SIZE) % (ARRAY_SIZE);
+        }
+        else{
+            CURRENT_LOC++;
+            CURRENT_LOC = CURRENT_LOC % (ARRAY_SIZE);
+        }
+        clear_music_next_prev();
+        /*
         const char *tour = MOUNT_POINT"/tour.wav";
         ret = play_wav(tour);
         if (ret != ESP_OK) {
@@ -374,7 +404,7 @@ void app_main(void)
         ret = play_wav(tour6);
         if (ret != ESP_OK) {
             return;
-        }
+        }*/
     }
 
     // All done, unmount partition and disable SPI peripheral
@@ -388,7 +418,7 @@ void app_main(void)
 
 static void *AI_thread(void * arg){
 
-    //return NULL;
+    return NULL;
 
     while(true){
     

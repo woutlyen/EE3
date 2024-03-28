@@ -14,6 +14,12 @@ int music_volume = 50;
 bool music_on_off = false;
 int music_next_prev = 0;
 
+bool alarm_on = false;
+
+bool get_alarm_state(){
+    return alarm_on;
+}
+
 void publish_dimmable_light_brightness(){
     char status[4];
     sprintf(status,"%d", get_dimmable_light_brightness());
@@ -100,6 +106,8 @@ void mqtt_connected(){
     msg_id = esp_mqtt_client_subscribe(event_client, "music/next", 0);
     ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
     
+    msg_id = esp_mqtt_client_subscribe(event_client, "alarmdecoder/panel/set", 0);
+    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 }
 
 void mqtt_subscribed(){
@@ -323,6 +331,24 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             printf(temp);
             set_hvac_temp(atof(temp));
             free(temp);
+
+        }
+
+        else if (strcmp(mqtt_topic, "alarmdecoder/panel/set") == 0)
+        {
+            char mode[10];
+            sprintf(mode, "%.*s", event->data_len, event->data);
+
+            if (strcmp(mode, "ARM_AWAY") == 0)
+            {
+                alarm_on = true;
+                esp_mqtt_client_publish(client, "alarmdecoder/panel", "armed_away", 0, 0, 0);
+            }
+            else if(strcmp(mode, "DISARM") == 0)
+            {
+                alarm_on = false;
+                esp_mqtt_client_publish(client, "alarmdecoder/panel", "disarmed", 0, 0, 0);
+            }
 
         }
 
