@@ -35,7 +35,11 @@
     "compare": "c",
     "algorithm": "c",
     "mqtt.h": "c",
-    "dimmable_light.h": "c"
+    "dimmable_light.h": "c",
+    "sdspi_host.h": "c",
+    "stat.h": "c",
+    "sdmmc_cmd.h": "c",
+    "esp_pthread.h": "c"
   },
   "editor.fontSize": 12,
   "terminal.integrated.fontSize": 12,

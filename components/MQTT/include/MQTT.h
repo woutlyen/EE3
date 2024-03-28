@@ -5,4 +5,6 @@ bool get_music_on_off();
 float get_music_volume();
 int get_music_next_prev();
 bool get_alarm_state();
+bool get_triggered();
+void set_triggered();
 void clear_music_next_prev();

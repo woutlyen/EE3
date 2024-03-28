@@ -15,6 +15,15 @@ bool music_on_off = false;
 int music_next_prev = 0;
 
 bool alarm_on = false;
+bool triggered = false;
+
+bool get_triggered(){
+    return triggered;
+}
+
+void set_triggered(){
+    triggered = true;
+}
 
 bool get_alarm_state(){
     return alarm_on;
@@ -347,6 +356,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             else if(strcmp(mode, "DISARM") == 0)
             {
                 alarm_on = false;
+                triggered = false;
                 esp_mqtt_client_publish(client, "alarmdecoder/panel", "disarmed", 0, 0, 0);
             }
 

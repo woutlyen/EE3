@@ -51,6 +51,7 @@ static void gpio_task(void* arg)
                 esp_mqtt_client_publish(event_client, "motion/downstairs/status", "ON", 0, 0, 0);
                 if(get_alarm_state()){
                     esp_mqtt_client_publish(event_client, "alarmdecoder/panel", "triggered", 0, 0, 0);
+                    set_triggered();
                 }
             }
             else if (io_num == MOTION_PIN && gpio_get_level(io_num) == 0){
