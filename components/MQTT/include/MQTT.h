@@ -7,4 +7,5 @@ int get_music_next_prev();
 bool get_alarm_state();
 bool get_triggered();
 void set_triggered();
+esp_mqtt_client_handle_t get_client();
 void clear_music_next_prev();

@@ -17,6 +17,10 @@ int music_next_prev = 0;
 bool alarm_on = false;
 bool triggered = false;
 
+esp_mqtt_client_handle_t get_client(){
+    return event_client;
+}
+
 bool get_triggered(){
     return triggered;
 }

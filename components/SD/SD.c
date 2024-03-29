@@ -175,10 +175,54 @@ void init_SD(void){
     sdmmc_card_print_info(stdout, card);
 
 
-    const char *songs[] = {"promised", "tour", "dansen", "turbo", "gold", "trip"};
+    const char *names[] = {
+    "Grafix - Dance All Day",
+    "Paul Elstak - The promised Land", 
+    "BENNETT - Vois sur ton chemin (Techno Mix)",
+    "Camo & Krooked - Falling",
+    "Rudimental, RAYE - Regardless",
+    "A Little Sound - Escape The Lights",
+    "Dimitri Vegas & Like Mike, Tiësto - Thank You (Not So Bad)",
+    "Macky Gee - Tour", 
+    "David Guetta - Satisfaction (Hardwell & Maddix Remix)",
+    "Gladde Paling - Lekker Dansen", 
+    "Alok & Bebe Rexha - Deep In Your Love (Dimitri Vegas & Like Mike, Ben Nicky & Dr Phunk Remix)",
+    "Wilkinson - Balance",
+    "Paul Elstak - Turbo", 
+    "La Fuente - RaTaTa",
+    "Grafix, Andromedik - Comedown",
+    "Oliver Heldens - Turn Me On",
+    "DJ Fresh - Gold Dust (Fox Stevenson Remix)", 
+    "FÄT TONY - Crying At The Discotheque (Lizot Remix)",
+    "Netsky - Let Me Hold You (Grafix Remix)",
+    "Dr. Peacock - Trip To Holland",
+    "Wilkinson, Kelli-Leigh - This Moment"};
+
+    const char *songs[] = {
+    "dad",
+    "tpl", 
+    "vstc",
+    "f",
+    "r",
+    "etl",
+    "ty",
+    "t", 
+    "s",
+    "ld", 
+    "diyl",
+    "b",
+    "tu", 
+    "ra",
+    "c",
+    "tmo",
+    "gd", 
+    "catd",
+    "lmhy",
+    "tth",
+    "tm"};
 
     int MAX_PATH_LENGTH = 100;
-    int ARRAY_SIZE = 6;
+    int ARRAY_SIZE = 21;
     int CURRENT_LOC = 0;
 
     char song[MAX_PATH_LENGTH];
@@ -188,7 +232,7 @@ void init_SD(void){
         snprintf(song, MAX_PATH_LENGTH, "%s/%s.wav", MOUNT_POINT, songs[CURRENT_LOC]);
 
         ESP_LOGI(TAG, "%d %s", CURRENT_LOC, song);
-
+        esp_mqtt_client_publish(get_client(), "song/state", names[CURRENT_LOC], 0, 0, 0);
         ret = play_wav(song);
         if (ret != ESP_OK) {
             return;
