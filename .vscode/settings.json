@@ -39,7 +39,11 @@
     "sdspi_host.h": "c",
     "stat.h": "c",
     "sdmmc_cmd.h": "c",
-    "esp_pthread.h": "c"
+    "esp_pthread.h": "c",
+    "esp_vfs_fat.h": "c",
+    "heating_temp_sensor.h": "c",
+    "mirf.h": "c",
+    "system_error": "c"
   },
   "editor.fontSize": 12,
   "terminal.integrated.fontSize": 12,

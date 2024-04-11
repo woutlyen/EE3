@@ -9,6 +9,7 @@
 #include "driver/gpio.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
 #include <inttypes.h>
@@ -53,6 +54,7 @@
 #define MOUNT_POINT "/sdcard"
 #define AUDIO_BUFFER 1024
 
+
 // Pin assignments can be set in menuconfig, see "SD SPI Example Configuration" menu.
 // You can also change the pin assignments here by changing the following 4 lines.
 #define PIN_NUM_MISO  GPIO_NUM_7
@@ -67,6 +69,7 @@ esp_mqtt_client_handle_t event_client;
 static const char *TAG = "audio_recorder";
 static void *AI_thread(void * arg);
 static void *MQTT_LIGHT_TEMP_thread(void * arg);
+static void *MUSIC_thread(void * arg);
 
 void configure_led(void)
 {
@@ -77,10 +80,13 @@ void configure_led(void)
     gpio_set_direction(BLINK_GPIO2, GPIO_MODE_OUTPUT);
 }
 
+
+
 void app_main(void)
 {
     init_rgb_light();
-    on_rgb_light();
+    init_dimmable_light();
+    //on_rgb_light();
 
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
@@ -91,7 +97,7 @@ void app_main(void)
     init_motion_sensor();
 
     pthread_attr_t attr;
-    pthread_t thread1, thread2;
+    pthread_t thread1, thread2, thread3;
     esp_pthread_cfg_t esp_pthread_cfg;
     int res;
 
@@ -102,16 +108,25 @@ void app_main(void)
     assert(res == 0);
     res = pthread_create(&thread2, NULL, MQTT_LIGHT_TEMP_thread, NULL);
     assert(res == 0);
+    res = pthread_create(&thread3, NULL, MUSIC_thread, NULL);
+    assert(res == 0);
     
-    set_rgb_light(0,100,0,true);
+    //set_rgb_light(0,100,0,true);
 
-    set_rgb_light(150,30,0,true);
+    //set_rgb_light(150,30,0,true);
+    //init_SD();
+
+    init_nrf();
+}
+
+static void *MUSIC_thread(void *arg){
     init_SD();
+    return NULL;
 }
 
 static void *AI_thread(void * arg){
 
-    return NULL;
+    //return NULL;
 
     while(true){
     
@@ -125,6 +140,7 @@ static void *AI_thread(void * arg){
         //speaker_stop();
         microphone_stop();
         //return NULL;
+        esp_restart();
     }
     else{
         //speaker_play(startData, 78630);

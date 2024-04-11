@@ -6,6 +6,8 @@
 #include "normal_light.h"
 #include "MQTT.h"
 
+#include "mirf.h"
+
 extern esp_mqtt_client_handle_t event_client;
 
 static const char *TAG = "MQTT";
@@ -16,6 +18,13 @@ int music_next_prev = 0;
 
 bool alarm_on = false;
 bool triggered = false;
+
+int hvac_temperature = 21;
+int current_temperature = 20;
+int modus = 0;
+
+NRF24_t dev;
+uint8_t message[5];
 
 esp_mqtt_client_handle_t get_client(){
     return event_client;
@@ -99,15 +108,6 @@ void mqtt_connected(){
     ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 
 
-    msg_id = esp_mqtt_client_subscribe(event_client, "normal/light/switch", 0);
-    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-
-
-    msg_id = esp_mqtt_client_subscribe(event_client, "hvac/mode/set", 0);
-    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-    msg_id = esp_mqtt_client_subscribe(event_client, "hvac/temp/set", 0);
-    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-
     msg_id = esp_mqtt_client_subscribe(event_client, "music/switch", 0);
     ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
     msg_id = esp_mqtt_client_subscribe(event_client, "music/volume/set", 0);
@@ -121,10 +121,33 @@ void mqtt_connected(){
     
     msg_id = esp_mqtt_client_subscribe(event_client, "alarmdecoder/panel/set", 0);
     ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+
+
+    //lights node
+    msg_id = esp_mqtt_client_subscribe(event_client, "rgb2/rgb/set", 0);
+    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+    msg_id = esp_mqtt_client_subscribe(event_client, "rgb2/light/switch", 0);
+    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+    msg_id = esp_mqtt_client_subscribe(event_client, "rgb2/brightness/set", 0);
+    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+
+    msg_id = esp_mqtt_client_subscribe(event_client, "dim2/light/switch", 0);
+    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+    msg_id = esp_mqtt_client_subscribe(event_client, "dim2/brightness/set", 0);
+    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+
+    msg_id = esp_mqtt_client_subscribe(event_client, "normal/light/switch", 0);
+    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+
+    msg_id = esp_mqtt_client_subscribe(event_client, "hvac/mode/set", 0);
+    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+    msg_id = esp_mqtt_client_subscribe(event_client, "hvac/temp/set", 0);
+    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 }
 
 void mqtt_subscribed(){
 
+    
     on_rgb_light();
     esp_mqtt_client_publish(event_client, "rgb/light/status", "ON", 0, 0, 0);
     publish_rgb_light();
@@ -134,19 +157,20 @@ void mqtt_subscribed(){
     esp_mqtt_client_publish(event_client, "dim/light/status", "ON", 0, 0, 0);
     publish_dimmable_light_brightness();
 
-    turn_on_normal_light();
-    esp_mqtt_client_publish(event_client, "normal/light/status", "ON", 0, 0, 0);
+    //turn_on_normal_light();
+    //esp_mqtt_client_publish(event_client, "normal/light/status", "ON", 0, 0, 0);
 
-    esp_mqtt_client_publish(event_client, "hvac/mode/status", "heat", 0, 0, 0);
+    //esp_mqtt_client_publish(event_client, "hvac/mode/status", "heat", 0, 0, 0);
 
-    esp_mqtt_client_publish(event_client, "hvac/temp/status", "21.0", 0, 0, 0);
-    esp_mqtt_client_publish(event_client, "hvac/temp/current", "20.0", 0, 0, 0);
+    //esp_mqtt_client_publish(event_client, "hvac/temp/status", "21.0", 0, 0, 0);
+    //esp_mqtt_client_publish(event_client, "hvac/temp/current", "20.0", 0, 0, 0);
 
     esp_mqtt_client_publish(event_client, "motion/downstairs/status", "OFF", 0, 0, 0);
     esp_mqtt_client_publish(event_client, "motion/upstairs/status", "OFF", 0, 0, 0);
 
     esp_mqtt_client_publish(event_client, "music/status", "OFF", 0, 0, 0);
     esp_mqtt_client_publish(event_client, "music/volume/status", "50", 0, 0, 0);
+    
 }
 
 
@@ -326,7 +350,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             }
         }
 
-
+        /*
         else if (strcmp(mqtt_topic, "hvac/mode/set") == 0)
         {
             char mode[10];
@@ -345,7 +369,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             set_hvac_temp(atof(temp));
             free(temp);
 
-        }
+        }*/
 
         else if (strcmp(mqtt_topic, "alarmdecoder/panel/set") == 0)
         {
@@ -364,6 +388,116 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
                 esp_mqtt_client_publish(client, "alarmdecoder/panel", "disarmed", 0, 0, 0);
             }
 
+        }
+
+
+        else if (strcmp(mqtt_topic, "normal/light/switch") == 0)
+        {
+            char on_off[10];
+            sprintf(rgb_on_off, "%.*s", event->data_len, event->data);
+
+            if (strcmp(on_off, "ON") == 0)
+            {
+                memset(message, 0, sizeof(message));
+                message[0] = 1;
+                message[1] = 1;
+                send_nrf_message();
+            }
+            else if(strcmp(on_off, "OFF") == 0)
+            {
+                memset(message, 0, sizeof(message));
+                message[0] = 1;
+                message[1] = 2;
+                send_nrf_message();
+            }
+        }
+
+        else if (strcmp(mqtt_topic, "dim2/light/switch") == 0)
+        {
+            char on_off[10];
+            sprintf(rgb_on_off, "%.*s", event->data_len, event->data);
+
+            if (strcmp(on_off, "ON") == 0)
+            {
+                memset(message, 0, sizeof(message));
+                message[0] = 2;
+                message[1] = 1;
+                send_nrf_message();
+            }
+            else if(strcmp(on_off, "OFF") == 0)
+            {
+                memset(message, 0, sizeof(message));
+                message[0] = 2;
+                message[1] = 2;
+                send_nrf_message();
+            }
+        }
+
+        else if (strcmp(mqtt_topic, "rgb2/light/switch") == 0)
+        {
+            char on_off[10];
+            sprintf(rgb_on_off, "%.*s", event->data_len, event->data);
+
+            if (strcmp(on_off, "ON") == 0)
+            {
+                memset(message, 0, sizeof(message));
+                message[0] = 3;
+                message[1] = 1;
+                send_nrf_message();
+            }
+            else if(strcmp(on_off, "OFF") == 0)
+            {
+                memset(message, 0, sizeof(message));
+                message[0] = 3;
+                message[1] = 2;
+                send_nrf_message();
+            }
+        }
+
+        else if (strcmp(mqtt_topic, "dim2/brightness/set") == 0)
+        {
+            char temp[4];
+            sprintf(temp, "%.*s\r\n", event->data_len, event->data);
+            memset(message, 0, sizeof(message));
+            message[0] = 2;
+            message[1] = 3;
+            message[2] = atoi(temp);
+            send_nrf_message();
+        }
+
+        else if (strcmp(mqtt_topic, "rgb2/brightness/set") == 0)
+        {
+            char temp[4];
+            sprintf(temp, "%.*s\r\n", event->data_len, event->data);
+            memset(message, 0, sizeof(message));
+            message[0] = 3;
+            message[1] = 3;
+            message[2] = atoi(temp);
+            send_nrf_message();
+        }
+
+        else if (strcmp(mqtt_topic, "rgb2/rgb/set") == 0)
+        {
+            char temp[11];
+            int rgb[3] = {0, 0, 0};
+            sprintf(temp, "%.*s\r\n", event->data_len, event->data);
+
+            // Tokenize the string based on the comma
+            char* token = strtok(temp, ",");
+        
+            // Convert each token to an integer and store it in the array
+            for (int i = 0; i < 3 && token != NULL; ++i) {
+                rgb[i] = atoi(token);
+                token = strtok(NULL, ",");
+            }
+            
+            memset(message, 0, sizeof(message));
+            message[0] = 3;
+            message[1] = 4;
+            message[2] = rgb[0];
+            message[3] = rgb[1];
+            message[4] = rgb[2];
+            send_nrf_message();
         }
 
         break;
@@ -420,4 +554,175 @@ esp_mqtt_client_handle_t init_mqtt(void)
     esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
     esp_mqtt_client_start(client);
     return(client);
+}
+
+void init_nrf(){
+
+        ESP_LOGI("NRF", "Start");
+        Nrf24_init(&dev);
+        uint8_t payload = 5;
+        uint8_t channel = CONFIG_RADIO_CHANNEL;
+        Nrf24_config(&dev, channel, payload);
+
+        //Set own address using 5 characters
+        esp_err_t ret = Nrf24_setRADDR(&dev, (uint8_t *)"FGHIJ");
+        if (ret != ESP_OK) {
+            ESP_LOGE("NRF", "nrf24l01 not installed");
+            while(1) { vTaskDelay(1); }
+        }
+
+        //Set the receiver address using 5 characters
+        ret = Nrf24_setTADDR(&dev, (uint8_t *)"FGHIJ");
+        if (ret != ESP_OK) {
+            ESP_LOGE("NRF", "nrf24l01 not installed");
+            while(1) { vTaskDelay(1); }
+        }
+
+        ESP_LOGW("NRF", "Set RF Data Ratio to 1MBps");
+        Nrf24_SetSpeedDataRates(&dev, 0);
+
+        ESP_LOGW("NRF", "CONFIG_RETRANSMIT_DELAY=%d", CONFIG_RETRANSMIT_DELAY);
+        Nrf24_setRetransmitDelay(&dev, CONFIG_RETRANSMIT_DELAY);
+
+        //Print settings
+        Nrf24_printDetails(&dev);
+
+    }
+
+void start_nrf_communication(){
+        ESP_LOGI("NRF", "Listening...");
+
+        uint8_t buf[5];
+
+        // Clear RX FiFo
+        while(1) {
+            if (Nrf24_dataReady(&dev) == false) break;
+            Nrf24_getData(&dev, buf);
+        }
+
+        while(1) {
+            //When the program is received, the received data is output from the serial port
+            if (Nrf24_dataReady(&dev)) {
+                Nrf24_getData(&dev, buf);
+                ESP_LOGI("NRF", "Got data:%s", buf);
+
+                /*Normal LED*/
+                if(buf[0] == 1 && buf[1] == 17){ //Normal LED turned on
+                    esp_mqtt_client_publish(event_client, "normal/light/status", "ON", 0, 0, 0);
+                }
+                else if(buf[0] == 1 && buf[1] == 18){ //Normal LED turned off
+                    esp_mqtt_client_publish(event_client, "normal/light/status", "OFF", 0, 0, 0);
+                }
+
+
+                /*Dimmable LED*/
+                if(buf[0] == 2 && buf[1] == 17){ //Dimmable LED turned on
+                    esp_mqtt_client_publish(event_client, "dim2/light/status", "ON", 0, 0, 0);
+                }
+                else if(buf[0] == 2 && buf[1] == 18){ //Dimmable LED turned off
+                    esp_mqtt_client_publish(event_client, "dim2/light/status", "OFF", 0, 0, 0);
+                }
+                else if(buf[0] == 2 && buf[1] == 19){ //Dimmable LED new brightness
+                    char status[4];
+                    sprintf(status,"%d", buf[2]);
+                    esp_mqtt_client_publish(event_client, "dim2/brightness/status", status, 0, 0, 0);
+                }
+
+
+                /*RGB LED*/
+                if(buf[0] == 3 && buf[1] == 17){ //RGB LED turned on
+                    esp_mqtt_client_publish(event_client, "rgb2/light/status", "ON", 0, 0, 0);
+                }
+                else if(buf[0] == 3 && buf[1] == 18){ //RGB LED turned off
+                    esp_mqtt_client_publish(event_client, "rgb2/light/status", "ON", 0, 0, 0);
+                }
+                else if(buf[0] == 3 && buf[1] == 19){ //RGB LED new brightness
+                    char status[4];
+                    sprintf(status,"%d", buf[2]);
+                    esp_mqtt_client_publish(event_client, "rgb2/brightness/status", status, 0, 0, 0);
+                }
+                else if(buf[0] == 3 && buf[1] == 20){ //RGB LED new color
+                    char status[12];
+                    sprintf(status,"%d,%d,%d", buf[2], buf[3], buf[4]);
+                    esp_mqtt_client_publish(event_client, "rgb2/rgb/status", status, 0, 0, 0);
+                }
+
+
+                /*Heating System*/
+                if(buf[0] == 4 && buf[1] == 17){ //Heating turned on
+                    modus = 1;
+                    if (hvac_temperature >= current_temperature)
+                    {
+                        esp_mqtt_client_publish(event_client, "hvac/mode/status", "heat", 0, 0, 0);
+                    }
+                    else if (hvac_temperature < current_temperature)
+                    {
+                        esp_mqtt_client_publish(event_client, "hvac/mode/status", "cool", 0, 0, 0);
+                    }
+                }
+                else if(buf[0] == 4 && buf[1] == 18){ //Heating turned off
+                    modus = 0;
+                    esp_mqtt_client_publish(event_client, "hvac/mode/status", "off", 0, 0, 0);
+                }
+                else if(buf[0] == 4 && buf[1] == 19){ //Heating new temperature
+                    char status[4];
+                    sprintf(status,"%d", buf[2]);
+                    esp_mqtt_client_publish(event_client, "hvac/temp/status", status, 0, 0, 0);
+                }
+
+
+                /*Motion Sensor*/
+                if(buf[0] == 5 && buf[1] == 1){ //Motion Sensor turned on
+                    esp_mqtt_client_publish(event_client, "motion/upstairs/status", "ON", 0, 0, 0);
+                }
+                else if(buf[0] == 5 && buf[1] == 2){ //Motion Sensor turned off
+                    esp_mqtt_client_publish(event_client, "motion/upstairs/status", "OFF", 0, 0, 0);
+                }
+
+
+                /*Temperature Sensor*/
+                if(buf[0] == 7 && buf[1] == 1){ //Temperature measurement
+                    if(buf[2] >= 10 && buf[2] <= 35){
+                        char status[3];
+                        sprintf(status,"%d", buf[2]);
+                        esp_mqtt_client_publish(event_client, "hvac/temp/current", status, 0, 0, 0);
+                    }
+                    else if(buf[2] < 10){
+                        char status[3];
+                        sprintf(status,"%d", 10);
+                        esp_mqtt_client_publish(event_client, "hvac/temp/current", status, 0, 0, 0);
+                    }
+                    else if(buf[2] > 35){
+                        char status[3];
+                        sprintf(status,"%d", 35);
+                        esp_mqtt_client_publish(event_client, "hvac/temp/current", status, 0, 0, 0);
+                    }
+
+                    if (modus != 0)
+                    {
+                        if (hvac_temperature >= current_temperature)
+                        {
+                            esp_mqtt_client_publish(event_client, "hvac/mode/status", "heat", 0, 0, 0);
+                        }
+                        else if (hvac_temperature < current_temperature)
+                        {
+                            esp_mqtt_client_publish(event_client, "hvac/mode/status", "cool", 0, 0, 0);
+                        }
+                    }
+                }
+            }
+            vTaskDelay(1);
+        }
+
+}
+
+void send_nrf_message(){
+    Nrf24_send(&dev, message);
+    ESP_LOGI("NRF", "Wait for sending.....");
+    if (Nrf24_isSend(&dev, 1000)) {
+        ESP_LOGI("NRF","Send success:%s", message);
+    } else {
+        ESP_LOGW("NRF","Send fail:");
+    }
+    vTaskDelay(1);
 }
