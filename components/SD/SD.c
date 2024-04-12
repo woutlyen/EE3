@@ -19,6 +19,38 @@
 #define PIN_NUM_CLK   GPIO_NUM_6
 #define PIN_NUM_CS    GPIO_NUM_4 
 
+bool play_start_sound = false;
+bool play_stop_sound = false;
+bool voice_assistant_activated = false;
+
+void set_voice_assistant_activated(){
+    voice_assistant_activated = true;
+}
+
+void set_voice_assistant_deactivated(){
+    voice_assistant_activated = false;
+}
+
+bool get_voice_assistant_activated(){
+    return voice_assistant_activated;
+}
+
+void set_start_sound(){
+    play_start_sound = true;
+}
+
+void set_stop_sound(){
+    play_stop_sound = true;
+}
+
+bool get_start_sound(){
+    return play_start_sound;
+}
+
+bool get_stop_sound(){
+    return play_stop_sound;
+}
+
 static const char *TAG = "SD";
 
 esp_err_t play_wav(const char *path)
@@ -70,11 +102,11 @@ esp_err_t play_wav(const char *path)
             speaker_play(alarm_buf, AUDIO_BUFFER);
             read = fread(alarm_buf, sizeof(int8_t), AUDIO_BUFFER, alarm);
         }
-    free(alarm_buf);
-    fclose(alarm);
+        free(alarm_buf);
+        fclose(alarm);
     }
 
-    if (get_music_on_off() == true){
+    if (voice_assistant_activated == false && get_music_on_off() == true){
         factor = get_music_volume();
         for (size_t i = 0; i < AUDIO_BUFFER/2; i++)
         {
@@ -92,7 +124,57 @@ esp_err_t play_wav(const char *path)
         ESP_LOGV(TAG, "Bytes read: %d", bytes_read);
     }
     else{
-        speaker_play(emptybuf, AUDIO_BUFFER);
+        if(play_start_sound){
+            FILE *start = fopen("/sdcard/start.wav", "rb");
+            if (start == NULL)
+            {
+                ESP_LOGE(TAG, "Failed to open file");
+                return ESP_ERR_INVALID_ARG;
+            }
+            // skip the header...
+            fseek(start, 44, SEEK_SET);
+
+            // create a writer buffer
+            uint8_t *start_buf = calloc(AUDIO_BUFFER, sizeof(int8_t));
+            size_t read = 0;
+            read = fread(start_buf, sizeof(int8_t), AUDIO_BUFFER, start);
+
+            while (read > 0)
+            {
+                speaker_play(start_buf, AUDIO_BUFFER);
+                read = fread(start_buf, sizeof(int8_t), AUDIO_BUFFER, start);
+            }
+            free(start_buf);
+            fclose(start);
+            play_start_sound = false;
+        }
+        else if(play_stop_sound){
+            FILE *stop = fopen("/sdcard/stop.wav", "rb");
+            if (stop == NULL)
+            {
+                ESP_LOGE(TAG, "Failed to open file");
+                return ESP_ERR_INVALID_ARG;
+            }
+            // skip the header...
+            fseek(stop, 44, SEEK_SET);
+
+            // create a writer buffer
+            uint8_t *stop_buf = calloc(AUDIO_BUFFER, sizeof(int8_t));
+            size_t read = 0;
+            read = fread(stop_buf, sizeof(int8_t), AUDIO_BUFFER, stop);
+
+            while (read > 0)
+            {
+                speaker_play(stop_buf, AUDIO_BUFFER);
+                read = fread(stop_buf, sizeof(int8_t), AUDIO_BUFFER, stop);
+            }
+            free(stop_buf);
+            fclose(stop);
+            play_stop_sound = false;
+        }
+        else{
+            speaker_play(emptybuf, AUDIO_BUFFER);
+        }
     }
     
   }

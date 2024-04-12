@@ -7,6 +7,7 @@
 #include "driver/gpio.h"
 
 #include "normal_light.h"
+#include "MQTT.h"
 
 static const char *TAG = NULL;
 gpio_num_t LEDPIN;
@@ -22,10 +23,47 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
                 if (strstr((char *)evt->data, "Unlock") != NULL){
                     //turn_on_normal_light();
                     //gpio_set_level(LEDPIN, 1);
+                    /*
+                    uint8_t mes[5];
+                    memset(mes, 0, sizeof(mes));
+                    NRF24_t dev = get_dev();
+
+                    mes[0] = 8;
+                    mes[1] = 2;
+
+                    Nrf24_send(&dev, mes);
+
+                    ESP_LOGI("NRF", "Wait for sending.....");
+                    if (Nrf24_isSend(&dev, 10000)) {
+                        ESP_LOGI("NRF","Send success:%s", mes);
+                    } else {
+                        ESP_LOGW("NRF","Send fail:");
+                    }
+                    vTaskDelay(1);*/
+                    unlock_door();
+
                 }
                 else if (strstr((char *)evt->data, "unlock") != NULL){
                     //turn_on_normal_light();
                     //gpio_set_level(LEDPIN, 1);
+                    /*
+                    uint8_t mes[5];
+                    memset(mes, 0, sizeof(mes));
+                    NRF24_t dev = get_dev();
+
+                    mes[0] = 8;
+                    mes[1] = 2;
+
+                    Nrf24_send(&dev, mes);
+                    
+                    ESP_LOGI("NRF", "Wait for sending.....");
+                    if (Nrf24_isSend(&dev, 10000)) {
+                        ESP_LOGI("NRF","Send success:%s", mes);
+                    } else {
+                        ESP_LOGW("NRF","Send fail:");
+                    }
+                    vTaskDelay(1);*/
+                    unlock_door();
                 }
             }
             break;

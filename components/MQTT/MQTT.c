@@ -5,8 +5,7 @@
 #include "dimmable_light.h"
 #include "normal_light.h"
 #include "MQTT.h"
-
-#include "mirf.h"
+#include "SD.h"
 
 extern esp_mqtt_client_handle_t event_client;
 
@@ -25,6 +24,12 @@ int modus = 0;
 
 NRF24_t dev;
 uint8_t message[5];
+
+bool door_unlock = false; 
+
+void unlock_door(){
+    door_unlock = true;
+}
 
 esp_mqtt_client_handle_t get_client(){
     return event_client;
@@ -394,7 +399,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         else if (strcmp(mqtt_topic, "normal/light/switch") == 0)
         {
             char on_off[10];
-            sprintf(rgb_on_off, "%.*s", event->data_len, event->data);
+            sprintf(on_off, "%.*s", event->data_len, event->data);
 
             if (strcmp(on_off, "ON") == 0)
             {
@@ -415,7 +420,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         else if (strcmp(mqtt_topic, "dim2/light/switch") == 0)
         {
             char on_off[10];
-            sprintf(rgb_on_off, "%.*s", event->data_len, event->data);
+            sprintf(on_off, "%.*s", event->data_len, event->data);
 
             if (strcmp(on_off, "ON") == 0)
             {
@@ -436,7 +441,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         else if (strcmp(mqtt_topic, "rgb2/light/switch") == 0)
         {
             char on_off[10];
-            sprintf(rgb_on_off, "%.*s", event->data_len, event->data);
+            sprintf(on_off, "%.*s", event->data_len, event->data);
 
             if (strcmp(on_off, "ON") == 0)
             {
@@ -498,6 +503,41 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             message[3] = rgb[1];
             message[4] = rgb[2];
             send_nrf_message();
+        }
+
+        else if (strcmp(mqtt_topic, "hvac/mode/set") == 0)
+        {
+            char mode[10];
+            sprintf(mode, "%.*s", event->data_len, event->data);
+
+            memset(message, 0, sizeof(message));
+            message[0] = 4;
+
+            if (!strcmp(mode, "off")){
+                message[1] = 2;
+            }
+            else if (!strcmp(mode, "cool") || !strcmp(mode, "heat") ){
+                message[1] = 1;
+            }
+
+            send_nrf_message();
+
+        }
+
+        else if (strcmp(mqtt_topic, "hvac/temp/set") == 0)
+        {
+            char* temp = (char*)malloc(sizeof(char)*100);
+            
+            sprintf(temp, "%.*s\r\n", event->data_len, event->data);
+            printf(temp);
+
+            memset(message, 0, sizeof(message));
+            message[0] = 4;
+            message[1] = 3;
+            message[2] = atoi(temp);
+            send_nrf_message();
+            free(temp);
+
         }
 
         break;
@@ -580,13 +620,13 @@ void init_nrf(){
 
         ESP_LOGW("NRF", "Set RF Data Ratio to 1MBps");
         Nrf24_SetSpeedDataRates(&dev, 0);
+        //Nrf24_SetSpeedDataRates(&dev, 1);
 
         ESP_LOGW("NRF", "CONFIG_RETRANSMIT_DELAY=%d", CONFIG_RETRANSMIT_DELAY);
         Nrf24_setRetransmitDelay(&dev, CONFIG_RETRANSMIT_DELAY);
 
         //Print settings
         Nrf24_printDetails(&dev);
-
     }
 
 void start_nrf_communication(){
@@ -605,6 +645,11 @@ void start_nrf_communication(){
             if (Nrf24_dataReady(&dev)) {
                 Nrf24_getData(&dev, buf);
                 ESP_LOGI("NRF", "Got data:%s", buf);
+
+                /*Voice Assistant*/
+                if(buf[0] == 8 && buf[1] == 1){ //Start voice assistant
+                    set_voice_assistant_activated();
+                }
 
                 /*Normal LED*/
                 if(buf[0] == 1 && buf[1] == 17){ //Normal LED turned on
@@ -665,6 +710,7 @@ void start_nrf_communication(){
                     esp_mqtt_client_publish(event_client, "hvac/mode/status", "off", 0, 0, 0);
                 }
                 else if(buf[0] == 4 && buf[1] == 19){ //Heating new temperature
+                    hvac_temperature = buf[2];
                     char status[4];
                     sprintf(status,"%d", buf[2]);
                     esp_mqtt_client_publish(event_client, "hvac/temp/status", status, 0, 0, 0);
@@ -673,26 +719,29 @@ void start_nrf_communication(){
 
                 /*Motion Sensor*/
                 if(buf[0] == 5 && buf[1] == 1){ //Motion Sensor turned on
-                    esp_mqtt_client_publish(event_client, "motion/upstairs/status", "ON", 0, 0, 0);
+                    esp_mqtt_client_publish(event_client, "motion/kitchen/status", "ON", 0, 0, 0);
                 }
                 else if(buf[0] == 5 && buf[1] == 2){ //Motion Sensor turned off
-                    esp_mqtt_client_publish(event_client, "motion/upstairs/status", "OFF", 0, 0, 0);
+                    esp_mqtt_client_publish(event_client, "motion/kitchen/status", "OFF", 0, 0, 0);
                 }
 
 
                 /*Temperature Sensor*/
                 if(buf[0] == 7 && buf[1] == 1){ //Temperature measurement
                     if(buf[2] >= 10 && buf[2] <= 35){
+                        current_temperature = buf[2];
                         char status[3];
                         sprintf(status,"%d", buf[2]);
                         esp_mqtt_client_publish(event_client, "hvac/temp/current", status, 0, 0, 0);
                     }
                     else if(buf[2] < 10){
+                        current_temperature = 10;
                         char status[3];
                         sprintf(status,"%d", 10);
                         esp_mqtt_client_publish(event_client, "hvac/temp/current", status, 0, 0, 0);
                     }
                     else if(buf[2] > 35){
+                        current_temperature = 35;
                         char status[3];
                         sprintf(status,"%d", 35);
                         esp_mqtt_client_publish(event_client, "hvac/temp/current", status, 0, 0, 0);
@@ -711,6 +760,23 @@ void start_nrf_communication(){
                     }
                 }
             }
+            else if (door_unlock){
+                uint8_t mes[5];
+                memset(mes, 0, sizeof(mes));
+
+                mes[0] = 8;
+                mes[1] = 2;
+
+                Nrf24_send(&dev, mes);
+
+                ESP_LOGI("NRF", "Wait for sending.....");
+                if (Nrf24_isSend(&dev, 10000)) {
+                    ESP_LOGI("NRF","Send success:%s", mes);
+                } else {
+                    ESP_LOGW("NRF","Send fail:");
+                }
+            }
+            door_unlock = false;
             vTaskDelay(1);
         }
 
@@ -719,7 +785,7 @@ void start_nrf_communication(){
 void send_nrf_message(){
     Nrf24_send(&dev, message);
     ESP_LOGI("NRF", "Wait for sending.....");
-    if (Nrf24_isSend(&dev, 1000)) {
+    if (Nrf24_isSend(&dev, 10000)) {
         ESP_LOGI("NRF","Send success:%s", message);
     } else {
         ESP_LOGW("NRF","Send fail:");

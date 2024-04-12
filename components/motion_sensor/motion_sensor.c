@@ -36,6 +36,7 @@ static void gpio_task(void* arg)
             //printf("Rising edge interrupt occurred at GPIO 13!\n");
             printf("GPIO[%"PRIu32"] intr, val: %d\n", io_num, gpio_get_level(io_num));
 
+            /*
             if (gpio_get_level(io_num) == 1)
             {
                 turn_on_normal_light();
@@ -45,23 +46,24 @@ static void gpio_task(void* arg)
                 turn_off_normal_light();
                 esp_mqtt_client_publish(event_client, "normal/light/status", "OFF", 0, 0, 0);
             }
-
+            */
+           
             if (io_num == MOTION_PIN && gpio_get_level(io_num) == 1)
             {
-                esp_mqtt_client_publish(event_client, "motion/downstairs/status", "ON", 0, 0, 0);
+                esp_mqtt_client_publish(event_client, "motion/living/status", "ON", 0, 0, 0);
                 if(get_alarm_state()){
                     esp_mqtt_client_publish(event_client, "alarmdecoder/panel", "triggered", 0, 0, 0);
                     set_triggered();
                 }
             }
             else if (io_num == MOTION_PIN && gpio_get_level(io_num) == 0){
-                esp_mqtt_client_publish(event_client, "motion/downstairs/status", "OFF", 0, 0, 0);
+                esp_mqtt_client_publish(event_client, "motion/living/status", "OFF", 0, 0, 0);
             }
             else if (io_num == MOTION_PIN_2 && gpio_get_level(io_num) == 1){
-                esp_mqtt_client_publish(event_client, "motion/upstairs/status", "ON", 0, 0, 0);
+                esp_mqtt_client_publish(event_client, "motion/kitchen/status", "ON", 0, 0, 0);
             }
             else if (io_num == MOTION_PIN_2 && gpio_get_level(io_num) == 0){
-                esp_mqtt_client_publish(event_client, "motion/upstairs/status", "OFF", 0, 0, 0);
+                esp_mqtt_client_publish(event_client, "motion/kitchen/status", "OFF", 0, 0, 0);
             }
             
         }
