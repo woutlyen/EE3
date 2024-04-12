@@ -1,3 +1,8 @@
+/**
+* Author: Wout Lyen
+* Team: HOME3
+*/
+
 #include "WiFi.h"
 #include "config.h"
 

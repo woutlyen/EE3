@@ -44,7 +44,8 @@
     "heating_temp_sensor.h": "c",
     "mirf.h": "c",
     "system_error": "c",
-    "mutex": "c"
+    "mutex": "c",
+    "stdlib.h": "c"
   },
   "editor.fontSize": 12,
   "terminal.integrated.fontSize": 12,

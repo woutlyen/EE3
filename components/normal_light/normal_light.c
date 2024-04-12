@@ -1,3 +1,8 @@
+/**
+* Author: Wout Lyen
+* Team: HOME3
+*/
+
 #include <driver/gpio.h>
 #include "normal_light.h"
 

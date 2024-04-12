@@ -1,3 +1,8 @@
+/**
+* Author: Wout Lyen
+* Team: HOME3
+*/
+
 void init_SD(void);
 
 void set_voice_assistant_activated();

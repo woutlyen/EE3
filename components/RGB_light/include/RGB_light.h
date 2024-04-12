@@ -1,3 +1,8 @@
+/**
+* Author: Wout Lyen
+* Team: HOME3
+*/
+
 void init_rgb_light();
 
 void set_rgb_light(int red, int green, int blue, bool update);

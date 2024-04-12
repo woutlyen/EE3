@@ -1,7 +1,7 @@
-#define PIN_NUM_MISO  GPIO_NUM_7
-#define PIN_NUM_MOSI  GPIO_NUM_5
-#define PIN_NUM_CLK   GPIO_NUM_6
-#define PIN_NUM_CS    GPIO_NUM_4 
+/**
+* Author: Wout Lyen
+* Team: HOME3
+*/
 
 #include "esp_log.h"
 #include "esp_system.h"

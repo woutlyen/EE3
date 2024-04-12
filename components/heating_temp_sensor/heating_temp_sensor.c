@@ -1,3 +1,8 @@
+/**
+* Author: Wout Lyen
+* Team: HOME3
+*/
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"

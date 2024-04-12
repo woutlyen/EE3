@@ -1,3 +1,8 @@
+/**
+* Author: Wout Lyen
+* Team: HOME3
+*/
+
 void init_dimmable_light();
 
 void on_dimmable_light();

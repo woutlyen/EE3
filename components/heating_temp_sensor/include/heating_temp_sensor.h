@@ -1,3 +1,7 @@
+/**
+* Author: Wout Lyen
+* Team: HOME3
+*/
 
 #include "esp_adc/adc_oneshot.h"
 #include "esp_adc/adc_cali.h"

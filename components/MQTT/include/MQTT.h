@@ -1,3 +1,8 @@
+/**
+* Author: Wout Lyen
+* Team: HOME3
+*/
+
 #include "mqtt_client.h"
 #include "mirf.h"
 

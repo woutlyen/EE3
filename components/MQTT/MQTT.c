@@ -1,3 +1,8 @@
+/**
+* Author: Wout Lyen
+* Team: HOME3
+*/
+
 #include "esp_log.h"
 
 #include "heating_temp_sensor.h"
@@ -646,6 +651,8 @@ void start_nrf_communication(){
                 Nrf24_getData(&dev, buf);
                 ESP_LOGI("NRF", "Got data:%s", buf);
 
+                printf("%d%d%d%d%d\n",buf[0],buf[1],buf[2],buf[3],buf[4]);
+
                 /*Voice Assistant*/
                 if(buf[0] == 8 && buf[1] == 1){ //Start voice assistant
                     set_voice_assistant_activated();
@@ -679,7 +686,7 @@ void start_nrf_communication(){
                     esp_mqtt_client_publish(event_client, "rgb2/light/status", "ON", 0, 0, 0);
                 }
                 else if(buf[0] == 3 && buf[1] == 18){ //RGB LED turned off
-                    esp_mqtt_client_publish(event_client, "rgb2/light/status", "ON", 0, 0, 0);
+                    esp_mqtt_client_publish(event_client, "rgb2/light/status", "OFF", 0, 0, 0);
                 }
                 else if(buf[0] == 3 && buf[1] == 19){ //RGB LED new brightness
                     char status[4];

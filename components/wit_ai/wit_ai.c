@@ -1,3 +1,8 @@
+/**
+* Author: Wout Lyen
+* Team: HOME3
+*/
+
 #include "wit_ai.h"
 
 #include <string.h>
@@ -65,6 +70,7 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
                     vTaskDelay(1);*/
                     unlock_door();
                 }
+                memset((char *) evt->data, 0, evt->data_len);
             }
             break;
         default:

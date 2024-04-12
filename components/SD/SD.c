@@ -1,3 +1,8 @@
+/**
+* Author: Wout Lyen
+* Team: HOME3
+*/
+
 #include <string.h>
 #include <sys/unistd.h>
 #include <sys/stat.h>

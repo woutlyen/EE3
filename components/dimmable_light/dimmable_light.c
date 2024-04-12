@@ -1,3 +1,8 @@
+/**
+* Author: Wout Lyen
+* Team: HOME3
+*/
+
 #include <driver/ledc.h>
 #include "dimmable_light.h"
 

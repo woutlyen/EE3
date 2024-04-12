@@ -1,3 +1,8 @@
+/**
+* Author: Wout Lyen
+* Team: HOME3
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

@@ -1,3 +1,8 @@
+/**
+* Author: Wout Lyen
+* Team: HOME3
+*/
+
 #include "stdint.h"
 #include "stddef.h"
 #include "driver/gpio.h"

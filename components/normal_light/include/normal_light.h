@@ -1,3 +1,7 @@
+/**
+* Author: Wout Lyen
+* Team: HOME3
+*/
 
 void init_normal_light();
 

@@ -1,6 +1,3 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C6 | ESP32-H2 | ESP32-S2 | ESP32-S3 |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | -------- | -------- |
-
 # EE3 - Home Automation System
 This repository currently stores the code for the main node, e.g. ESP32S3, for the EE3 project.
 
@@ -24,6 +21,11 @@ Below is short explanation of all the files in the project folder.
 │   │   ├── include
 │   │   │   └── microphone.h
 │   │   └── microphone.c
+│   ├── mirf
+│   │   ├── CMakeLists.txt
+│   │   ├── include
+│   │   │   └── mirf.h
+│   │   └── mirf.c
 │   ├── motion_sensor
 │   │   ├── CMakeLists.txt
 │   │   ├── include
@@ -44,6 +46,11 @@ Below is short explanation of all the files in the project folder.
 │   │   ├── include
 │   │   │   └── RGB_light.h
 │   │   └── RGB_light.c
+│   ├── SD
+│   │   ├── CMakeLists.txt
+│   │   ├── include
+│   │   │   └── SD.h
+│   │   └── SD.c
 │   ├── speaker
 │   │   ├── CMakeLists.txt
 │   │   ├── include
