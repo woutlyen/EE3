@@ -1,7 +1,7 @@
 # EE3 - Home Automation System
-This repository currently stores the code for the main node, e.g. ESP32S3, for the EE3 project.
+This repository currently stores the code for the main node (ESP32S3), and for the AS608 fingerprint sensor  for the EE3 project.
 
-Below is short explanation of all the files in the project folder.
+Below is short explanation of all the files in the ESP32 folder.
 
 ```
 ├── CMakeLists.txt
