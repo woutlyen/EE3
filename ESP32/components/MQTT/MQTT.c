@@ -610,7 +610,7 @@ void init_nrf(){
         Nrf24_config(&dev, channel, payload);
 
         //Set own address using 5 characters
-        esp_err_t ret = Nrf24_setRADDR(&dev, (uint8_t *)"FGHIJ");
+        esp_err_t ret = Nrf24_setRADDR(&dev, (uint8_t *)"PQRST");
         if (ret != ESP_OK) {
             ESP_LOGE("NRF", "nrf24l01 not installed");
             while(1) { vTaskDelay(1); }
@@ -622,6 +622,10 @@ void init_nrf(){
             ESP_LOGE("NRF", "nrf24l01 not installed");
             while(1) { vTaskDelay(1); }
         }
+
+        Nrf24_addRADDR(&dev, 2, (uint8_t *)"ABCDE");
+
+        Nrf24_addRADDR(&dev, 3, (uint8_t *)"KLMNO");
 
         ESP_LOGW("NRF", "Set RF Data Ratio to 1MBps");
         Nrf24_SetSpeedDataRates(&dev, 0);
