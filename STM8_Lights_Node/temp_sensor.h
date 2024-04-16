@@ -26,6 +26,8 @@
   ******************************************************************************
    */
 
+#include "stm8s_tim3.h"
+
 /* Private functions */
 void TIM3_Configuration(void);
 void ADC_Configuration(void);
