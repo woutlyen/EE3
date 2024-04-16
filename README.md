@@ -1,6 +1,7 @@
 # EE3 - Home Automation System
 This repository currently stores the code for the main node (ESP32S3), the entry node (STM8), lights/heating node (STM8), NTC temperature sensor and for the AS608 fingerprint sensor for the EE3 project.
 
+## ESP32
 Below is short explanation of all the files in the ESP32 folder.
 
 ```
