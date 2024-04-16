@@ -55,8 +55,9 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-main/config.h
-build/
+ESP32/main/config.h
+ESP32/components/WiFi/*
+ESP32/build/*
 
 
 # End of https://www.toptal.com/developers/gitignore/api/c
